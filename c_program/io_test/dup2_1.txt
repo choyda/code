@@ -1,0 +1,25 @@
+total 456
+drwxr-xr-x  24 caida  staff    816  9 29 10:37 .
+drwxr-xr-x  14 caida  staff    476  9 21 21:33 ..
+-rwxr-xr-x   1 caida  staff   8568  9 28 22:01 dup2
+-rw-r--r--   1 caida  staff    653  9 28 22:03 dup2.c
+-rw-r--r--   1 caida  staff  69175  9 28 22:01 dup2.txt
+-rw-r--r--   1 caida  staff      0  9 29 10:38 dup2_1.txt
+-rwxr-xr-x   1 caida  staff   8552  9 28 21:41 exec
+-rw-r--r--   1 caida  staff    758  9 28 21:41 exec.c
+-rwxr-xr-x   1 caida  staff   8664  9 27 11:54 fork
+-rw-r--r--   1 caida  staff    753  9 27 11:50 fork.c
+-rwxr-xr-x   1 caida  staff   8616  9 27 11:54 fork1
+-rw-r--r--   1 caida  staff    640  9 27 11:54 fork1.c
+-rwxr-xr-x   1 caida  staff   8480  9 27 14:27 getuid
+-rw-r--r--   1 caida  staff    370  9 27 14:27 getuid.c
+-rwxr-xr-x   1 caida  staff   8664  9 28 22:57 gr
+-rw-r--r--   1 caida  staff    720  9 28 22:57 gr.c
+-rwxr-xr-x   1 caida  staff   8476  9 28 21:39 hello
+-rw-r--r--   1 caida  staff    438  9 28 21:39 hello.c
+-rwxr-xr-x   1 caida  staff   8784  9 29 10:37 wait
+-rw-r--r--   1 caida  staff   1234  9 29 10:37 wait.c
+-rwxr-xr-x   1 caida  staff   8520  9 28 23:14 zoom
+-rw-r--r--   1 caida  staff    724  9 28 23:14 zoom.c
+-rwxr-xr-x   1 caida  staff   8520  9 28 23:15 zoom_cc
+-rw-r--r--   1 caida  staff    724  9 28 23:15 zoom_cc.c
