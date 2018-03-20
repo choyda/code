@@ -8,12 +8,8 @@
 #include <stdio.h>
 
 int main(){
-
-    long int num = 1000, i;
-
-    for(i=0; i<30; i++){
-        num += num * 0.05;
-        printf("%d\n", num);
-    }
-
+        
+    int a=3, b=10,z;
+    z=a&b;
+    printf("%d---%d---%d", a, b ,z);
 }

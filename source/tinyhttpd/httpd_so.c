@@ -481,10 +481,10 @@ int startup(u_short *port)
     struct sockaddr_in name;
 
     /*建立 socket */
-    httpd = socket(PF_INET, SOCK_STREAM, 0);
+    httpd = socket(PF_INET, SOCK_STREAM, 0);  //PF_INET 和 AF_INET 一样
     if (httpd == -1)
         error_die("socket");
-    memset(&name, 0, sizeof(name));
+    memset(&name, 0, sizeof(name)); //还有一个是bzero, memset兼容posix
     name.sin_family = AF_INET;
     name.sin_port = htons(*port); //如果是0，可以绑定0端口
     name.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -494,7 +494,7 @@ int startup(u_short *port)
     if (*port == 0)  /* if dynamically allocating a port */
     {
         int namelen = sizeof(name);
-        if (getsockname(httpd, (struct sockaddr *)&name, &namelen) == -1)
+        if (getsockname(httpd, (struct sockaddr *)&name, &namelen) == -1) //用getsockname返回新分配的端口
             error_die("getsockname");
         *port = ntohs(name.sin_port); //相当于是给port的地址，赋值一个新的随机端口
     }
@@ -538,8 +538,8 @@ void unimplemented(int client)
 
 int main(void)
 {
-    int server_sock = -1;
-    u_short port = 0;
+    int server_sock = -1; //初始化socket描述符
+    u_short port = 0; //端口用短整形
     int client_sock = -1;
     struct sockaddr_in client_name;
     int client_name_len = sizeof(client_name);

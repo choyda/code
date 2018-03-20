@@ -363,6 +363,7 @@ int get_line(int sock, char *buf, int size)
             if (c == '\r')
             {
                 /*使用 MSG_PEEK 标志使下一次读取依然可以得到这次读取的内容，可认为接收窗口不滑动*/
+
                 n = recv(sock, &c, 1, MSG_PEEK);
                 /* DEBUG printf("%02X\n", c); */
                 /*但如果是换行符则把它吸收掉*/
