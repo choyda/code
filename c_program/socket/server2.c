@@ -29,6 +29,7 @@ int main(int argc, char * argv[], char * env[]){
     bzero(&serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    //inet_pton(AF_INET, SERV_IP, &serv_addr.sin_addr.s_addr); //也是绑定ip的方法
     serv_addr.sin_port = htons(SOCK_PORT);
     bind(sfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr));// 注意绑定的参数,最后一个参数，导致客户端连接不上。
 
