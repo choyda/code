@@ -14,6 +14,7 @@
 
 void do_sigchild(int num)
 {
+    printf("ssssss\n");
     while (waitpid(0, NULL, WNOHANG) > 0)
         ;
 }
