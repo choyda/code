@@ -3,69 +3,78 @@
 #include <unistd.h>
 #include <errno.h>
 
-ssize_t Read(int fd, void *ptr, size_t nbytes)
+#include "cd_std_wrap.h"
+
+ssize_t cd_read(int fd, void *ptr, size_t nbytes)
 {
     ssize_t n;
-
-    again:
+again:
     if ( (n = read(fd, ptr, nbytes)) == -1) {
-        if (errno == EINTR)
+        if (errno == EINTR) { //以下均是慢速系统调用的EINTR判断
             goto again;
-        else
-            return -1;
+        }else{
+            cd_perr_exit("cd_read error");
+        }
     }
     return n;
 }
 
-ssize_t Write(int fd, const void *ptr, size_t nbytes)
+ssize_t cd_write(int fd, const void *ptr, size_t nbytes)
 {
     ssize_t n;
-
-    again:
+again:
     if ( (n = write(fd, ptr, nbytes)) == -1) {
-        if (errno == EINTR)
+        if (errno == EINTR) {
             goto again;
-        else
-            return -1;
+        }else {
+            cd_perr_exit("cd_write error");
+        }
     }
     return n;
 }
 
-int Close(int fd)
+int cd_close(int fd)
 {
     int n;
-    if ((n = close(fd)) == -1)
-        perr_exit("close error");
+    if ((n = close(fd)) == -1) {
+        cd_perr_exit("cd_close error");
+    }
 
     return n;
 }
 
-/*参三: 应该读取的字节数*/
-ssize_t Readn(int fd, void *vptr, size_t n)
-{
-    size_t  nleft;              //usigned int 剩余未读取的字节数
-    ssize_t nread;              //int 实际读到的字节数
-    char   *ptr;
+/*
+ * 读取指定字节数，linux没有， 自己封装
+ * 参数三 size_t: 应该读取的字节数
+ */
+ssize_t cd_readn(int fd, void *vptr, size_t n) {
 
-    ptr = vptr;
-    nleft = n;
+    size_t  nleft;                  //usigned int 剩余未读取的字节数
+    ssize_t nread;                  //int 实际读到的字节数
+    char   *ptr = (char *)vptr;     //指向缓冲区的指针
 
-    while (nleft > 0) {
-        if ((nread = read(fd, ptr, nleft)) < 0) {
-            if (errno == EINTR)
-                nread = 0;
-            else
+    nleft = n;                      //指定要读的字节数 比如5000
+
+    while (nleft > 0) { //5000大于0, 第二次循环nleft=4000
+        if ((nread = read(fd, ptr, nleft)) < 0) { //ptr += nread表示下次读的时候按着+完的位置放
+            if (errno == EINTR) {   //出错逻辑
+                nread = 0;          //EINTR错误，重读，表示一个自己没读到
+            }else {
                 return -1;
-        } else if (nread == 0)
+            }
+        }else if(nread == 0){       //如果读完了，就返回
             break;
-
-        nleft -= nread;
-        ptr += nread;
+        }
+        nleft -= nread;             //1，如果是EINTR的0，相当于没读到，重新读
+                                    //2，比如读到1000，用5000-1000，还剩4000没读
+        ptr += nread;               //后移指针1000的位置， 下次从这个位置继续存储字节
     }
-    return n - nleft;
+    return n - nleft;               //1，一次读完直接就是5000 -5000 返回0，在调用方表示读完。
+                                    //2,如果5000，一次1000，最后2次，一次是800，一次是600，多出4000
+                                    //传进来的vpte大小是5000，会自动截取后面的。
 }
 
-ssize_t Writen(int fd, const void *vptr, size_t n)
+ssize_t cd_writen(int fd, const void *vptr, size_t n)
 {
     size_t nleft;
     ssize_t nwritten;
@@ -87,7 +96,7 @@ ssize_t Writen(int fd, const void *vptr, size_t n)
     return n;
 }
 
-static ssize_t my_read(int fd, char *ptr)
+static ssize_t cd_my_read(int fd, char *ptr)
 {
     static int read_cnt;
     static char *read_ptr;
@@ -109,14 +118,14 @@ static ssize_t my_read(int fd, char *ptr)
     return 1;
 }
 
-ssize_t Readline(int fd, void *vptr, size_t maxlen)
+ssize_t cd_read_line(int fd, void *vptr, size_t maxlen)
 {
     ssize_t n, rc;
     char    c, *ptr;
 
     ptr = vptr;
     for (n = 1; n < maxlen; n++) {
-        if ( (rc = my_read(fd, &c)) == 1) {
+        if ( (rc = cd_my_read(fd, &c)) == 1) {
             *ptr++ = c;
             if (c  == '\n')
                 break;

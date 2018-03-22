@@ -1,6 +1,6 @@
-#ifdef       __CD_STD_WRAP_H_
+#ifndef       __CD_STD_WRAP_H_
 #define      __CD_STD_WRAP_H_
 
-void perr_exit(const char *);
+void cd_perr_exit(const char *);
 
 #endif
