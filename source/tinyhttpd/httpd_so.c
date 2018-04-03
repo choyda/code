@@ -352,7 +352,7 @@ int get_line(int sock, char *buf, int size)
     int n;
 
     /*把终止条件统一为 \n 换行符，标准化 buf 数组*/
-    while ((i < size - 1) && (c != '\n'))
+    while ((i < size - 1) && (c != '\n'))// 如果0< 1024-1 && c!=\n
     {
         /*一次仅接收一个字节*/
         n = recv(sock, &c, 1, 0);
@@ -363,11 +363,12 @@ int get_line(int sock, char *buf, int size)
             if (c == '\r')
             {
                 /*使用 MSG_PEEK 标志使下一次读取依然可以得到这次读取的内容，可认为接收窗口不滑动*/
-                n = recv(sock, &c, 1, MSG_PEEK);
+                n = recv(sock, &c, 1, MSG_PEEK);  //如果读取的不是\n是a，不使用MSG_PEEK,下次在读取a可能就读取不到
+
                 /* DEBUG printf("%02X\n", c); */
                 /*但如果是换行符则把它吸收掉*/
-                if ((n > 0) && (c == '\n'))
-                    recv(sock, &c, 1, 0);
+                if ((n > 0) && (c == '\n'))     //tcp recv默认是读出的从缓冲区中移除了.
+                    recv(sock, &c, 1, 0);       //再读一次，相当于把\n从tcp缓冲区移除掉。
                 else
                     c = '\n';
             }
