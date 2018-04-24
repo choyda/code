@@ -6,26 +6,30 @@
 
 #define GFL_SIZE 100
 #define FIRST_LEN 1024                     //第一行文件大小
-struct st_gfl_muv{                         //定义获得http第一行的数据，获取方法，目录，版本
+
+//解析http起始行，获取请求方法，uri路径，参数
+struct st_http_parsing{
     char *method;
     char *uri;
+    char *params;
     char *version;
 };
-#define SERVER_STRING "Server: jdbhttpd/0.1.0\r\n"
-struct st_cli_info{                     //定义一个结构体, 将地址结构跟cfd捆绑
+
+//定义一个结构体, 将地址结构跟cfd捆绑
+struct st_cli_info{
     struct sockaddr_in cli_addr;
     char *cli_accept_info;
     int cfd;
 };
 
-/*解析http协议头的第一行，获取 方法，路径 协议*/
-void cd_get_first_line(struct st_gfl_muv *gfl_muv, char *buf);
+//解析http协议头的第一行，获取 方法，路径 协议
+//void cd_get_first_line(struct st_gfl_muv *gfl_muv, char *buf);
 
-/*获取文件的类型*/
+//获取文件的类型
 void cd_get_file_type(char *file_name, char *file_type);
 
 /*处理get方法*/
-void cd_act_get(struct st_gfl_muv *);
+//void cd_act_get(struct st_gfl_muv *);
 
 /*http解析返回值，往客户端发送的数据*/
 int cd_act_http_parsing(struct st_cli_info *cli_info, char *buf);

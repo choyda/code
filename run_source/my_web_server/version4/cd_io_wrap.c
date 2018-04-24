@@ -142,39 +142,42 @@ ssize_t cd_read_line(int fd, void *vptr, size_t maxlen)
     return n;
 }
 
-int cd_get_line(int sock, char *buf, int size){
+ssize_t cd_get_line(int sock, char *buf, int size){
+
     int i = 0;
     char c = '\0';
+    char st[100];
     int n;
 
-    /*把终止条件统一为 \n 换行符，标准化 buf 数组*/
-    while ((i < size - 1) && (c != '\n'))// 如果0< 1024-1 && c!=\n
-    {
-        /*一次仅接收一个字节*/
-        n = recv(sock, &c, 1, 0);
-        /* DEBUG printf("%02X\n", c); */
-        if (n > 0)
-        {
-            /*收到 \r 则继续接收下个字节，因为换行符可能是 \r\n */
-            if (c == '\r')
-            {
-                /*使用 MSG_PEEK 标志使下一次读取依然可以得到这次读取的内容，可认为接收窗口不滑动*/
-                n = recv(sock, &c, 1, MSG_PEEK);  //如果读取的不是\n是a，不使用MSG_PEEK,下次在读取a可能就读取不到
+    //格式化为标准字符串以\n结束
+    while ((i < size - 1) && (c != '\n')){ // 如果0<1024-1 && c!=\n
+        //一次仅接收一个字节
 
-                /* DEBUG printf("%02X\n", c); */
-                /*但如果是换行符则把它吸收掉*/
-                if ((n > 0) && (c == '\n')) {//tcp recv默认是读出的从缓冲区中移除了.
-                    recv(sock, &c, 1, 0);       //再读一次，相当于把\n从tcp缓冲区移除掉。
-                }else {
-                    c = '\n';
-                }
-            }
-            /*存到缓冲区*/
-            buf[i] = c;
-            i++;
-        }
-        else
-            c = '\n';
+        i++;
+        n = recv(sock, &c, 1, 0);
+//        sprintf(st, "%s", c);
+        printf("%c--%02X--%d\n",c , c, i);
+//        if (n > 0) {
+//            /*收到 \r 则继续接收下个字节，因为换行符可能是 \r\n */
+//            if (c == '\r')
+//            {
+//                /*使用 MSG_PEEK 标志使下一次读取依然可以得到这次读取的内容，可认为接收窗口不滑动*/
+//                n = recv(sock, &c, 1, MSG_PEEK);  //如果读取的不是\n是a，不使用MSG_PEEK,下次在读取a可能就读取不到
+//
+//                /* DEBUG printf("%02X\n", c); */
+//                /*但如果是换行符则把它吸收掉*/
+//                if ((n > 0) && (c == '\n')) {//tcp recv默认是读出的从缓冲区中移除了.
+//                    recv(sock, &c, 1, 0);       //再读一次，相当于把\n从tcp缓冲区移除掉。
+//                }else {
+//                    c = '\n';
+//                }
+//            }
+//            /*存到缓冲区*/
+//            buf[i] = c;
+//            i++;
+//        }
+//        else
+//            c = '\n';
     }
 //    buf[i] = '\0';
 

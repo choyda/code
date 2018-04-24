@@ -11,7 +11,7 @@
 
 #include "cd_std_wrap.h"
 /*获得http头首部*/
-void cd_get_first_line(struct st_gfl_muv *gfl_muv, char *buf){
+void cd_get_first_line(struct st_http_parsing *gfl_muv, char *buf){
 
     //方法很多，strtok，我选择sscanf
     char method[GFL_SIZE], uri[GFL_SIZE], version[GFL_SIZE];
@@ -23,7 +23,7 @@ void cd_get_first_line(struct st_gfl_muv *gfl_muv, char *buf){
 
 
 /*处理get方法*/
-void cd_act_get(struct st_gfl_muv * gfl_muv){
+void cd_act_get(struct st_http_parsing * gfl_muv){
     if(strcasecmp(gfl_muv->method, "GET") == 0){
 
     }
@@ -96,8 +96,9 @@ int cd_act_http_parsing(struct st_cli_info *cli_info, char *buf){
 
     //1,获得第一行http请求.
     int n, l=1;
-    char first_buf[FIRST_LEN];
-//    cd_read(cli_info->cfd, first_buf, FIRST_LEN);
+    char first_buf[FIRST_LEN],test_buf[BUFSIZ];
+    cd_read(cli_info->cfd, test_buf, BUFSIZ);
+    printf("%s--\n", test_buf);
 
     n = cd_get_line(cli_info->cfd, first_buf, FIRST_LEN);//读客户端
     if(n < 0){
@@ -105,7 +106,7 @@ int cd_act_http_parsing(struct st_cli_info *cli_info, char *buf){
     }
 
     //2,获得get,uri. 保存在gfl_muv 结构体中
-    struct st_gfl_muv gfl_muv;
+    struct st_http_parsing gfl_muv;
     cd_get_first_line(&gfl_muv, first_buf);
 
     //3,根据uri,获得文件名，参数，是动态还是静态
@@ -116,47 +117,47 @@ int cd_act_http_parsing(struct st_cli_info *cli_info, char *buf){
 
     //4,判断文件是否存在，如果不存在直往下执行,直接返回404
     //获取文件状态，查看文件在不在
-
-    struct stat stat_buf;
-    if (stat(file_name, &stat_buf) < 0) {
-//        cd_http_code_404();
-    }else{
-        cd_get_file_type(file_name, file_type);
-        // 如果文件存在，判断是get还是post
-
-        if(strcasecmp(gfl_muv.method, "GET") == 0) {
-            //get 处理方式
-            //获取文件状态，查看文件在不在
-            if (act_type == 1) {    //静态路径
-                //1,读取文件
-                char strbuf[2048];//内存映射的空间
-                file_fd = open(file_name,O_RDONLY);
-                read(file_fd,strbuf,sizeof(strbuf));
-//                printf("%s\n",head_buf);
-//                srcp = mmap(0, stat_buf.st_size, PROT_READ, MAP_PRIVATE, file_fd, 0); //内存映射
-
-//                cd_close(file_fd);
-//                printf("%s\n", head_buf);
-//                char strbuf[1025];
-//                strcpy(strbuf, "hello");
-                cd_http_code_200(buf, file_type, stat_buf.st_size);
-                sprintf(buf, "%s%s", buf,strbuf);
-                printf("%s\n", buf);
-                cd_write(cli_info->cfd, buf, strlen(buf));
-                return 0;
-                //清空srcp空间
-//                munmap(srcp, stat_buf.st_size);
-            } else if (act_type == 2) {
-                //动态
-//                php_cgi(cli_info->cfd, file_name, gfl_muv.method, params);
-                return 0;
-            } else {
-                return 0;
-            }
-        }else if (strcasecmp(gfl_muv.method, "POST") == 0) {
-            //post处理方式
-        }
-    }
+//
+//    struct stat stat_buf;
+//    if (stat(file_name, &stat_buf) < 0) {
+////        cd_http_code_404();
+//    }else{
+//        cd_get_file_type(file_name, file_type);
+//        // 如果文件存在，判断是get还是post
+//
+//        if(strcasecmp(gfl_muv.method, "GET") == 0) {
+//            //get 处理方式
+//            //获取文件状态，查看文件在不在
+//            if (act_type == 1) {    //静态路径
+//                //1,读取文件
+//                char strbuf[2048];//内存映射的空间
+//                file_fd = open(file_name,O_RDONLY);
+//                read(file_fd,strbuf,sizeof(strbuf));
+////                printf("%s\n",head_buf);
+////                srcp = mmap(0, stat_buf.st_size, PROT_READ, MAP_PRIVATE, file_fd, 0); //内存映射
+//
+////                cd_close(file_fd);
+////                printf("%s\n", head_buf);
+////                char strbuf[1025];
+////                strcpy(strbuf, "hello");
+//                cd_http_code_200(buf, file_type, stat_buf.st_size);
+//                sprintf(buf, "%s%s", buf,strbuf);
+////                printf("%s\n", buf);
+//                cd_write(cli_info->cfd, buf, strlen(buf));
+//                return 0;
+//                //清空srcp空间
+////                munmap(srcp, stat_buf.st_size);
+//            } else if (act_type == 2) {
+//                //动态
+////                php_cgi(cli_info->cfd, file_name, gfl_muv.method, params);
+//                return 0;
+//            } else {
+//                return 0;
+//            }
+//        }else if (strcasecmp(gfl_muv.method, "POST") == 0) {
+//            //post处理方式
+//        }
+//    }
 
     return 0;
 

@@ -21,19 +21,25 @@
 
 #define SIZEBUF 1024 //读取buf大小
 
-
-
 /*每一个线程处理一个客户端请求*/
 void *pth_act(void *args)
 {
-    int n,i;
     struct st_cli_info *cli_info = (struct st_cli_info*)args;
-    char buf[SIZEBUF], serv_log_cli_info[SIZEBUF];
-    struct st_gfl_muv gfl_muv;
-    int in = 1;
+    char buf[SIZEBUF], serv_log_cli_info[SIZEBUF]; //服务器记录客户端的信息
+    struct st_http_parsing http_parsing;        //保存解析http的结构体
+    int n = 1, i=0;
+    //1, 解析http行首
+    while(1) {
+
+        n = cd_get_line(cli_info->cfd, buf, sizeof(buf));
+        printf("%s\n", buf);
+        printf("%d\n", n);
+        i++;
+        if(i == 2) break;
+    }
 //    while(1){
         //解析http
-        n = cd_act_http_parsing(cli_info, buf);                    //buf保存返回信息
+//        n = cd_act_http_parsing(cli_info, buf);                    //buf保存返回信息
 //        printf("%s\n", buf);
 //        printf("%d\n", cli_info->cfd);
                          //回写给客户端
@@ -51,13 +57,13 @@ void *pth_act(void *args)
 //        sprintf(serv_log_cli_info, "%s %s", cli_info->cli_accept_info, buf);
 //        cd_write(STDOUT_FILENO, serv_log_cli_info, strlen(serv_log_cli_info));                           //服务器显示
 //
-        if (n == 0) {
-            printf("client %d closed...\n", cli_info->cfd);
-//           break; //一定要跳出循环，要不然会read错误
-        }
+//        if (n == 0) {
+//            printf("client %d closed...\n", cli_info->cfd);
+////           break; //一定要跳出循环，要不然会read错误
+//        }
 //        break;
 //    }
-//    cd_close(cli_info->cfd);
+    cd_close(cli_info->cfd);
 
 
     return (void *)0;
@@ -70,7 +76,7 @@ int main(int argc, char *argv[]){
     struct sockaddr_in cli_addr;                    //accept客户端结构体
     socklen_t cli_len;
     char cli_ip[INET_ADDRSTRLEN];                   //保存打印信息ip的字符数组
-    char buf[SIZEBUF], cli_accept_info[SIZEBUF];           //保存客户端信息
+    char cli_accept_info[SIZEBUF];           //保存客户端信息
     pthread_t tid;                                  //线程id
     struct st_cli_info cli_info[256];                //根据最大线程数创建结构体数组.
     cli_len = sizeof(cli_addr);                     //客户端结构体长度，用于保存客户端信息
